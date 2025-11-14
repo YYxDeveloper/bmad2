@@ -1,0 +1,1603 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鄰里市集 - 頁面分析視覺化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: #F8F9FA;
+            padding: 20px;
+            line-height: 1.6;
+            color: #1E293B;
+        }
+
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1E293B;
+            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748B;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .summary {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .summary-card {
+            background: #EFF6FF;
+            border: 2px solid #2563EB;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+        }
+
+        .summary-number {
+            font-size: 48px;
+            font-weight: 700;
+            color: #2563EB;
+            margin-bottom: 8px;
+        }
+
+        .summary-label {
+            font-size: 14px;
+            color: #64748B;
+        }
+
+        .module-section {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .module-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #2563EB;
+            padding-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .module-icon {
+            font-size: 28px;
+        }
+
+        .pages-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .page-card {
+            background: #F8F9FA;
+            border: 2px solid #E5E7EB;
+            border-radius: 8px;
+            padding: 20px;
+            transition: all 200ms ease-in-out;
+            cursor: pointer;
+        }
+
+        .page-card:hover {
+            border-color: #2563EB;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .page-card.p0 {
+            border-left: 4px solid #10B981;
+        }
+
+        .page-card.p1 {
+            border-left: 4px solid #F59E0B;
+        }
+
+        .page-card.p2 {
+            border-left: 4px solid #94A3B8;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: start;
+            margin-bottom: 12px;
+        }
+
+        .page-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1E293B;
+            flex: 1;
+        }
+
+        .page-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .badge-p0 {
+            background: #ECFDF5;
+            color: #10B981;
+        }
+
+        .badge-p1 {
+            background: #FFFBEB;
+            color: #F59E0B;
+        }
+
+        .badge-p2 {
+            background: #F1F5F9;
+            color: #64748B;
+        }
+
+        .page-type {
+            font-size: 12px;
+            color: #64748B;
+            margin-bottom: 8px;
+        }
+
+        .page-route {
+            font-family: 'Courier New', monospace;
+            font-size: 12px;
+            color: #2563EB;
+            background: #EFF6FF;
+            padding: 4px 8px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+            display: inline-block;
+        }
+
+        .page-requirements {
+            font-size: 12px;
+            color: #64748B;
+            margin-bottom: 12px;
+        }
+
+        .page-features {
+            font-size: 14px;
+            color: #1E293B;
+            margin-bottom: 8px;
+        }
+
+        .page-features-title {
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .page-features-list {
+            list-style: none;
+            padding-left: 0;
+        }
+
+        .page-features-list li {
+            padding: 4px 0;
+            padding-left: 20px;
+            position: relative;
+        }
+
+        .page-features-list li::before {
+            content: "•";
+            position: absolute;
+            left: 0;
+            color: #2563EB;
+        }
+
+        .ui-elements {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 1px solid #E5E7EB;
+        }
+
+        .ui-elements-title {
+            font-size: 12px;
+            font-weight: 600;
+            color: #64748B;
+            margin-bottom: 8px;
+        }
+
+        .ui-elements-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 6px;
+        }
+
+        .ui-tag {
+            background: #F1F5F9;
+            color: #64748B;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 11px;
+        }
+
+        .navigation {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+            max-height: 80vh;
+            overflow-y: auto;
+            z-index: 1000;
+            min-width: 200px;
+        }
+
+        .nav-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 12px;
+        }
+
+        .nav-link {
+            display: block;
+            padding: 8px 12px;
+            color: #64748B;
+            text-decoration: none;
+            border-radius: 4px;
+            font-size: 13px;
+            margin-bottom: 4px;
+            transition: all 150ms ease-in-out;
+        }
+
+        .nav-link:hover {
+            background: #EFF6FF;
+            color: #2563EB;
+        }
+
+        .priority-filter {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #E5E7EB;
+            background: white;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 150ms ease-in-out;
+        }
+
+        .filter-btn:hover {
+            border-color: #2563EB;
+            color: #2563EB;
+        }
+
+        .filter-btn.active {
+            background: #2563EB;
+            color: white;
+            border-color: #2563EB;
+        }
+
+        .stats-bar {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+
+        .stat-item {
+            flex: 1;
+            min-width: 150px;
+            padding: 16px;
+            background: #F8F9FA;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .stat-value {
+            font-size: 32px;
+            font-weight: 700;
+            color: #2563EB;
+            margin-bottom: 4px;
+        }
+
+        .stat-label {
+            font-size: 12px;
+            color: #64748B;
+        }
+
+        @media print {
+            .navigation {
+                display: none;
+            }
+            .module-section {
+                page-break-after: always;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .navigation {
+                position: relative;
+                top: 0;
+                right: 0;
+                margin-bottom: 20px;
+            }
+            .pages-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>鄰里市集 - 頁面分析視覺化</h1>
+        <p class="subtitle">Neighbor Marketplace - All Pages Analysis Visualization</p>
+
+        <!-- Summary -->
+        <div class="summary">
+            <h2 style="font-size: 20px; font-weight: 600; margin-bottom: 16px;">📊 頁面統計總覽</h2>
+            <div class="summary-grid">
+                <div class="summary-card">
+                    <div class="summary-number">36</div>
+                    <div class="summary-label">總頁面數</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">26</div>
+                    <div class="summary-label">MVP 核心頁面</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">7</div>
+                    <div class="summary-label">Web 後台頁面</div>
+                </div>
+                <div class="summary-card">
+                    <div class="summary-number">3</div>
+                    <div class="summary-label">Phase 2 擴展</div>
+                </div>
+            </div>
+            <div class="stats-bar">
+                <div class="stat-item">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">認證與個人資料</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">7</div>
+                    <div class="stat-label">商品管理</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">6</div>
+                    <div class="stat-label">交易流程</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">社交與互動</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">5</div>
+                    <div class="stat-label">設定與管理</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value">3</div>
+                    <div class="stat-label">系統頁面</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="navigation">
+            <div class="nav-title">📑 快速導航</div>
+            <a href="#module-1" class="nav-link">1. 認證與個人資料</a>
+            <a href="#module-2" class="nav-link">2. 商品管理</a>
+            <a href="#module-3" class="nav-link">3. 交易流程</a>
+            <a href="#module-4" class="nav-link">4. 社交與互動</a>
+            <a href="#module-5" class="nav-link">5. 設定與管理</a>
+            <a href="#module-6" class="nav-link">6. 系統頁面</a>
+            <a href="#module-7" class="nav-link">7. Web 後台</a>
+            <a href="#module-8" class="nav-link">8. Phase 2 擴展</a>
+        </div>
+
+        <!-- Priority Filter -->
+        <div class="priority-filter">
+            <button class="filter-btn active" onclick="filterPages('all')">全部頁面</button>
+            <button class="filter-btn" onclick="filterPages('p0')">P0 - MVP 必須</button>
+            <button class="filter-btn" onclick="filterPages('p1')">P1 - Web 後台</button>
+            <button class="filter-btn" onclick="filterPages('p2')">P2 - Phase 2</button>
+        </div>
+
+        <!-- Module 1: 認證與個人資料 -->
+        <div class="module-section" id="module-1">
+            <div class="module-title">
+                <span class="module-icon">🔐</span>
+                <span>1. 認證與個人資料模組</span>
+            </div>
+            <div class="pages-grid">
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">登入/註冊頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：全螢幕頁</div>
+                    <div class="page-route">/login, /register</div>
+                    <div class="page-requirements">對應需求：FR-001</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>第三方登入（Google、Apple、LINE）</li>
+                            <li>登入狀態持久保存</li>
+                            <li>首次登入自動建立帳號</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">品牌 Logo</span>
+                            <span class="ui-tag">第三方登入按鈕</span>
+                            <span class="ui-tag">隱私政策連結</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">社區驗證頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：標準頁</div>
+                    <div class="page-route">/verify</div>
+                    <div class="page-requirements">對應需求：FR-002</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>QR Code 掃描功能</li>
+                            <li>門牌號碼確認</li>
+                            <li>驗證結果顯示</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">QR Code 掃描器</span>
+                            <span class="ui-tag">門牌號碼顯示</span>
+                            <span class="ui-tag">確認按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">個人資料編輯頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：表單頁</div>
+                    <div class="page-route">/profile/edit</div>
+                    <div class="page-requirements">對應需求：FR-003</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>編輯暱稱、頭像、個人簡介</li>
+                            <li>顯示系統資訊</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">頭像上傳</span>
+                            <span class="ui-tag">輸入框</span>
+                            <span class="ui-tag">保存按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">個人主頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：詳情頁</div>
+                    <div class="page-route">/profile/:userId</div>
+                    <div class="page-requirements">對應需求：FR-014</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示個人資訊</li>
+                            <li>正在出售的商品列表</li>
+                            <li>收到的評價列表</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">個人資訊區塊</span>
+                            <span class="ui-tag">商品列表</span>
+                            <span class="ui-tag">評價列表</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">首次使用引導頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：全螢幕頁</div>
+                    <div class="page-route">/onboarding</div>
+                    <div class="page-requirements">對應需求：FR-031</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>歡迎頁面</li>
+                            <li>登入引導</li>
+                            <li>社區驗證引導</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">引導輪播</span>
+                            <span class="ui-tag">跳過按鈕</span>
+                            <span class="ui-tag">下一步按鈕</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 2: 商品管理 -->
+        <div class="module-section" id="module-2">
+            <div class="module-title">
+                <span class="module-icon">📦</span>
+                <span>2. 商品管理模組</span>
+            </div>
+            <div class="pages-grid">
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">首頁/商品列表頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：列表頁</div>
+                    <div class="page-route">/home</div>
+                    <div class="page-requirements">對應需求：FR-005</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示最新商品（依發布時間倒序）</li>
+                            <li>下拉重新整理</li>
+                            <li>滾動載入更多</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">商品卡片列表</span>
+                            <span class="ui-tag">下拉刷新</span>
+                            <span class="ui-tag">載入更多</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">商品詳情頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：詳情頁</div>
+                    <div class="page-route">/product/:productId</div>
+                    <div class="page-requirements">對應需求：FR-006</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>照片輪播（4張）</li>
+                            <li>商品資訊顯示</li>
+                            <li>賣家資訊區塊</li>
+                            <li>留言區</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">圖片輪播器</span>
+                            <span class="ui-tag">商品資訊卡片</span>
+                            <span class="ui-tag">固定底部操作欄</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">商品發布頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：表單頁</div>
+                    <div class="page-route">/publish</div>
+                    <div class="page-requirements">對應需求：FR-004</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>上傳商品照片（4張）</li>
+                            <li>選擇商品狀態</li>
+                            <li>輸入商品資訊</li>
+                            <li>設定價格</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">照片上傳區域</span>
+                            <span class="ui-tag">表單輸入欄位</span>
+                            <span class="ui-tag">發布按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">我的商品列表頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：列表頁</div>
+                    <div class="page-route">/my-products</div>
+                    <div class="page-requirements">對應需求：FR-007</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>查看商品列表（分類）</li>
+                            <li>編輯、下架、刪除商品</li>
+                            <li>標記為已預訂/已售出</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">分類標籤</span>
+                            <span class="ui-tag">商品卡片列表</span>
+                            <span class="ui-tag">操作選單</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">商品編輯頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：表單頁</div>
+                    <div class="page-route">/product/:productId/edit</div>
+                    <div class="page-requirements">對應需求：FR-007</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>修改商品資訊</li>
+                            <li>更新商品狀態</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">表單結構</span>
+                            <span class="ui-tag">保存按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">分類瀏覽頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：列表頁</div>
+                    <div class="page-route">/categories/:categoryId</div>
+                    <div class="page-requirements">對應需求：FR-008</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示該分類的商品列表</li>
+                            <li>分類計數顯示</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">分類標題</span>
+                            <span class="ui-tag">商品列表</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">搜尋結果頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：列表頁</div>
+                    <div class="page-route">/search?q=:keyword</div>
+                    <div class="page-requirements">對應需求：FR-009</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示搜尋結果</li>
+                            <li>搜尋歷史紀錄</li>
+                            <li>熱門搜尋關鍵字</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">搜尋框</span>
+                            <span class="ui-tag">搜尋歷史</span>
+                            <span class="ui-tag">搜尋結果列表</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 3: 交易流程 -->
+        <div class="module-section" id="module-3">
+            <div class="module-title">
+                <span class="module-icon">💰</span>
+                <span>3. 交易流程模組</span>
+            </div>
+            <div class="pages-grid">
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">交易確認頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：標準頁</div>
+                    <div class="page-route">/transaction/confirm</div>
+                    <div class="page-requirements">對應需求：FR-012</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>選擇成交買家</li>
+                            <li>選擇交易模式</li>
+                            <li>確認交易資訊</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">買家選擇列表</span>
+                            <span class="ui-tag">交易模式卡片</span>
+                            <span class="ui-tag">確認按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">管理室代收頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：標準頁</div>
+                    <div class="page-route">/transaction/pickup/:transactionId</div>
+                    <div class="page-requirements">對應需求：FR-020</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示代收編號（6位數字）</li>
+                            <li>顯示 QR Code</li>
+                            <li>狀態追蹤</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">代收編號顯示</span>
+                            <span class="ui-tag">QR Code</span>
+                            <span class="ui-tag">狀態指示器</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">面交約定頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：表單頁</div>
+                    <div class="page-route">/transaction/meetup/:transactionId</div>
+                    <div class="page-requirements">對應需求：FR-020</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>選擇面交地點</li>
+                            <li>選擇面交日期和時間</li>
+                            <li>安全提示顯示</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">地點選擇卡片</span>
+                            <span class="ui-tag">日期選擇器</span>
+                            <span class="ui-tag">時間選擇器</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">交易完成頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：標準頁</div>
+                    <div class="page-route">/transaction/complete/:transactionId</div>
+                    <div class="page-requirements">對應需求：FR-012, FR-013</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示交易完成確認</li>
+                            <li>提示進行評價</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">成功圖示</span>
+                            <span class="ui-tag">交易資訊</span>
+                            <span class="ui-tag">評價按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">評價頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：標準頁</div>
+                    <div class="page-route">/review/:transactionId</div>
+                    <div class="page-requirements">對應需求：FR-013</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>選擇星等評分（1-5星）</li>
+                            <li>填寫文字評價</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">星等評分選擇器</span>
+                            <span class="ui-tag">文字評價輸入框</span>
+                            <span class="ui-tag">送出按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">交易紀錄頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：列表頁</div>
+                    <div class="page-route">/transactions</div>
+                    <div class="page-requirements">對應需求：FR-017</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>查看交易列表（我買到的、我賣出的）</li>
+                            <li>搜尋交易紀錄</li>
+                            <li>補評價功能</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">分類標籤</span>
+                            <span class="ui-tag">交易卡片列表</span>
+                            <span class="ui-tag">搜尋框</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 4: 社交與互動 -->
+        <div class="module-section" id="module-4">
+            <div class="module-title">
+                <span class="module-icon">💬</span>
+                <span>4. 社交與互動模組</span>
+            </div>
+            <div class="pages-grid">
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">留言板頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：詳情頁的一部分</div>
+                    <div class="page-route">內嵌在 /product/:productId</div>
+                    <div class="page-requirements">對應需求：FR-010</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示所有留言（公開+隱私）</li>
+                            <li>發表留言</li>
+                            <li>一鍵議價功能</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">留言列表</span>
+                            <span class="ui-tag">留言輸入框</span>
+                            <span class="ui-tag">議價按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">通知中心頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：列表頁</div>
+                    <div class="page-route">/notifications</div>
+                    <div class="page-requirements">對應需求：FR-011</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示通知列表（依時間倒序）</li>
+                            <li>未讀標記</li>
+                            <li>點擊跳轉到對應頁面</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">通知列表</span>
+                            <span class="ui-tag">未讀標記</span>
+                            <span class="ui-tag">清除已讀按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">議價對話頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：模態框或標準頁</div>
+                    <div class="page-route">/negotiate/:productId</div>
+                    <div class="page-requirements">對應需求：FR-010</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示商品原價</li>
+                            <li>設定期望價格</li>
+                            <li>自動計算折扣百分比</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">價格滑桿</span>
+                            <span class="ui-tag">折扣百分比顯示</span>
+                            <span class="ui-tag">議價按鈕</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 5: 設定與管理 -->
+        <div class="module-section" id="module-5">
+            <div class="module-title">
+                <span class="module-icon">⚙️</span>
+                <span>5. 設定與管理模組</span>
+            </div>
+            <div class="pages-grid">
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">設定頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：列表頁</div>
+                    <div class="page-route">/settings</div>
+                    <div class="page-requirements">對應需求：FR-016, FR-025, FR-026</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>通知設定</li>
+                            <li>隱私設定</li>
+                            <li>個資法權利</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">設定項目列表</span>
+                            <span class="ui-tag">開關切換器</span>
+                            <span class="ui-tag">導航連結</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">封鎖名單頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：列表頁</div>
+                    <div class="page-route">/settings/blocked</div>
+                    <div class="page-requirements">對應需求：FR-016</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示封鎖的使用者列表</li>
+                            <li>解除封鎖功能</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">封鎖使用者列表</span>
+                            <span class="ui-tag">解除封鎖按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">隱私設定頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：表單頁</div>
+                    <div class="page-route">/settings/privacy</div>
+                    <div class="page-requirements">對應需求：FR-024, FR-025, FR-026</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>門牌號碼顯示設定</li>
+                            <li>個人資料保護設定</li>
+                            <li>個資法權利行使</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">設定選項</span>
+                            <span class="ui-tag">資料下載按鈕</span>
+                            <span class="ui-tag">帳號刪除按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">檢舉頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：模態框或標準頁</div>
+                    <div class="page-route">/report</div>
+                    <div class="page-requirements">對應需求：FR-015</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>選擇檢舉原因</li>
+                            <li>上傳截圖證據</li>
+                            <li>選擇是否封鎖</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">檢舉原因選項</span>
+                            <span class="ui-tag">截圖上傳區域</span>
+                            <span class="ui-tag">提交按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">爭議處理頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：表單頁</div>
+                    <div class="page-route">/dispute/:transactionId</div>
+                    <div class="page-requirements">對應需求：FR-022, FR-023</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>選擇爭議類型</li>
+                            <li>上傳證據照片</li>
+                            <li>填寫爭議說明</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">爭議類型選擇</span>
+                            <span class="ui-tag">證據上傳區域</span>
+                            <span class="ui-tag">處理進度顯示</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 6: 系統頁面 -->
+        <div class="module-section" id="module-6">
+            <div class="module-title">
+                <span class="module-icon">🔧</span>
+                <span>6. 系統頁面</span>
+            </div>
+            <div class="pages-grid">
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">錯誤頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：標準頁</div>
+                    <div class="page-route">/error</div>
+                    <div class="page-requirements">對應需求：FR-032</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示友善的錯誤訊息</li>
+                            <li>提供解決方法</li>
+                            <li>重試按鈕</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">錯誤圖示</span>
+                            <span class="ui-tag">錯誤訊息</span>
+                            <span class="ui-tag">重試按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">載入頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：全螢幕頁</div>
+                    <div class="page-route">內嵌在各頁面</div>
+                    <div class="page-requirements">對應需求：FR-033</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示載入動畫</li>
+                            <li>顯示載入狀態文字</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">載入動畫</span>
+                            <span class="ui-tag">載入文字</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p0" data-priority="p0">
+                    <div class="page-header">
+                        <div class="page-title">空狀態頁</div>
+                        <span class="page-badge badge-p0">P0</span>
+                    </div>
+                    <div class="page-type">頁面類型：內嵌在各列表頁</div>
+                    <div class="page-route">內嵌在各列表頁</div>
+                    <div class="page-requirements">對應需求：多個功能需求</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示空狀態圖示和訊息</li>
+                            <li>提供操作建議</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">空狀態圖示</span>
+                            <span class="ui-tag">空狀態標題</span>
+                            <span class="ui-tag">操作按鈕</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 7: Web 後台 -->
+        <div class="module-section" id="module-7">
+            <div class="module-title">
+                <span class="module-icon">🖥️</span>
+                <span>7. Web 後台管理頁面</span>
+            </div>
+            <div class="pages-grid">
+                <div class="page-card p1" data-priority="p1">
+                    <div class="page-header">
+                        <div class="page-title">管理員登入頁</div>
+                        <span class="page-badge badge-p1">P1</span>
+                    </div>
+                    <div class="page-type">頁面類型：Web 頁面</div>
+                    <div class="page-route">/admin/login</div>
+                    <div class="page-requirements">對應需求：FR-019</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>Email + 密碼登入</li>
+                            <li>登入狀態持久保存</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">登入表單</span>
+                            <span class="ui-tag">忘記密碼連結</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p1" data-priority="p1">
+                    <div class="page-header">
+                        <div class="page-title">後台首頁/儀表板</div>
+                        <span class="page-badge badge-p1">P1</span>
+                    </div>
+                    <div class="page-type">頁面類型：Web 頁面</div>
+                    <div class="page-route">/admin/dashboard</div>
+                    <div class="page-requirements">對應需求：FR-019, FR-030</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>數據統計面板</li>
+                            <li>圖表顯示</li>
+                            <li>異常交易警示列表</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">統計卡片</span>
+                            <span class="ui-tag">圖表</span>
+                            <span class="ui-tag">警示列表</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p1" data-priority="p1">
+                    <div class="page-header">
+                        <div class="page-title">社區管理頁</div>
+                        <span class="page-badge badge-p1">P1</span>
+                    </div>
+                    <div class="page-type">頁面類型：Web 頁面</div>
+                    <div class="page-route">/admin/communities</div>
+                    <div class="page-requirements">對應需求：FR-019</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>新增/編輯社區資訊</li>
+                            <li>建立建築結構</li>
+                            <li>批次匯入門牌資料</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">社區列表</span>
+                            <span class="ui-tag">門牌管理表格</span>
+                            <span class="ui-tag">CSV 匯入按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p1" data-priority="p1">
+                    <div class="page-header">
+                        <div class="page-title">QR Code 產生器頁</div>
+                        <span class="page-badge badge-p1">P1</span>
+                    </div>
+                    <div class="page-type">頁面類型：Web 頁面</div>
+                    <div class="page-route">/admin/qrcode</div>
+                    <div class="page-requirements">對應需求：FR-019, FR-029</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>選擇社區和門牌</li>
+                            <li>產生 QR Code</li>
+                            <li>批量產生 QR Code</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">社區和門牌選擇器</span>
+                            <span class="ui-tag">QR Code 顯示區域</span>
+                            <span class="ui-tag">下載/列印按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p1" data-priority="p1">
+                    <div class="page-header">
+                        <div class="page-title">代收商品管理頁</div>
+                        <span class="page-badge badge-p1">P1</span>
+                    </div>
+                    <div class="page-type">頁面類型：Web 頁面</div>
+                    <div class="page-route">/admin/pickups</div>
+                    <div class="page-requirements">對應需求：FR-019, FR-020</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示待處理代收清單</li>
+                            <li>登記「已收到商品」</li>
+                            <li>管理現金</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">代收清單表格</span>
+                            <span class="ui-tag">狀態篩選器</span>
+                            <span class="ui-tag">現金管理區塊</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p1" data-priority="p1">
+                    <div class="page-header">
+                        <div class="page-title">權限管理頁</div>
+                        <span class="page-badge badge-p1">P1</span>
+                    </div>
+                    <div class="page-type">頁面類型：Web 頁面</div>
+                    <div class="page-route">/admin/permissions</div>
+                    <div class="page-requirements">對應需求：FR-027</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>建立/管理管理員帳號</li>
+                            <li>設定權限層級</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">管理員列表</span>
+                            <span class="ui-tag">權限設定表單</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p1" data-priority="p1">
+                    <div class="page-header">
+                        <div class="page-title">操作日誌頁</div>
+                        <span class="page-badge badge-p1">P1</span>
+                    </div>
+                    <div class="page-type">頁面類型：Web 頁面</div>
+                    <div class="page-route">/admin/logs</div>
+                    <div class="page-requirements">對應需求：FR-028</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示操作記錄</li>
+                            <li>依時間、操作類型、操作者篩選</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">操作日誌表格</span>
+                            <span class="ui-tag">篩選器</span>
+                            <span class="ui-tag">搜尋框</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Module 8: Phase 2 -->
+        <div class="module-section" id="module-8">
+            <div class="module-title">
+                <span class="module-icon">🚀</span>
+                <span>8. Phase 2 擴展頁面</span>
+            </div>
+            <div class="pages-grid">
+                <div class="page-card p2" data-priority="p2">
+                    <div class="page-header">
+                        <div class="page-title">批量上架頁</div>
+                        <span class="page-badge badge-p2">P2</span>
+                    </div>
+                    <div class="page-type">頁面類型：表單頁</div>
+                    <div class="page-route">/publish/batch</div>
+                    <div class="page-requirements">對應需求：Phase 2 功能</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>一次選擇多個商品照片（10-20件）</li>
+                            <li>批次設定共同屬性</li>
+                            <li>一次發布</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">多照片選擇區域</span>
+                            <span class="ui-tag">批次設定表單</span>
+                            <span class="ui-tag">預覽列表</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p2" data-priority="p2">
+                    <div class="page-header">
+                        <div class="page-title">社區公告頁</div>
+                        <span class="page-badge badge-p2">P2</span>
+                    </div>
+                    <div class="page-type">頁面類型：列表頁</div>
+                    <div class="page-route">/announcements</div>
+                    <div class="page-requirements">對應需求：Phase 2 功能</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>顯示社區公告列表</li>
+                            <li>社區活動通知</li>
+                            <li>失物招領專區</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">公告列表</span>
+                            <span class="ui-tag">分類標籤</span>
+                            <span class="ui-tag">發布公告按鈕</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="page-card p2" data-priority="p2">
+                    <div class="page-header">
+                        <div class="page-title">以物易物頁</div>
+                        <span class="page-badge badge-p2">P2</span>
+                    </div>
+                    <div class="page-type">頁面類型：表單頁/詳情頁</div>
+                    <div class="page-route">/barter/:productId</div>
+                    <div class="page-requirements">對應需求：Phase 2 功能</div>
+                    <div class="page-features">
+                        <div class="page-features-title">主要功能：</div>
+                        <ul class="page-features-list">
+                            <li>選擇「交換」模式</li>
+                            <li>填寫想交換的物品類型</li>
+                            <li>提議交換方案</li>
+                        </ul>
+                    </div>
+                    <div class="ui-elements">
+                        <div class="ui-elements-title">UI 元素：</div>
+                        <div class="ui-elements-tags">
+                            <span class="ui-tag">交換模式選擇</span>
+                            <span class="ui-tag">交換物品描述</span>
+                            <span class="ui-tag">交換提議列表</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Route Summary -->
+        <div class="module-section">
+            <div class="module-title">
+                <span class="module-icon">🗺️</span>
+                <span>頁面路由結構總覽</span>
+            </div>
+            <div style="background: #F8F9FA; padding: 24px; border-radius: 8px; font-family: 'Courier New', monospace; font-size: 14px; line-height: 2;">
+                <div style="margin-bottom: 16px;"><strong style="color: #2563EB;">主要路由：</strong></div>
+                <div>/                          → 首頁/商品列表</div>
+                <div>/login                     → 登入/註冊</div>
+                <div>/verify                    → 社區驗證</div>
+                <div>/onboarding                → 首次使用引導</div>
+                <div>/product/:id               → 商品詳情</div>
+                <div>/product/:id/edit          → 商品編輯</div>
+                <div>/publish                   → 發布商品</div>
+                <div>/my-products               → 我的商品</div>
+                <div>/categories/:id            → 分類瀏覽</div>
+                <div>/search                    → 搜尋結果</div>
+                <div>/transaction/confirm       → 交易確認</div>
+                <div>/transaction/pickup/:id    → 管理室代收</div>
+                <div>/transaction/meetup/:id    → 面交約定</div>
+                <div>/transaction/complete/:id  → 交易完成</div>
+                <div>/transactions              → 交易紀錄</div>
+                <div>/review/:id                → 評價</div>
+                <div>/negotiate/:id             → 議價</div>
+                <div>/profile/:id               → 個人主頁</div>
+                <div>/profile/edit              → 個人資料編輯</div>
+                <div>/notifications             → 通知中心</div>
+                <div>/settings                  → 設定</div>
+                <div>/settings/blocked          → 封鎖名單</div>
+                <div>/settings/privacy          → 隱私設定</div>
+                <div>/report                    → 檢舉</div>
+                <div>/dispute/:id               → 爭議處理</div>
+                
+                <div style="margin-top: 24px; margin-bottom: 16px;"><strong style="color: #2563EB;">Web 後台路由：</strong></div>
+                <div>/admin/login               → 管理員登入</div>
+                <div>/admin/dashboard           → 後台首頁</div>
+                <div>/admin/communities         → 社區管理</div>
+                <div>/admin/qrcode              → QR Code 產生器</div>
+                <div>/admin/pickups             → 代收商品管理</div>
+                <div>/admin/permissions         → 權限管理</div>
+                <div>/admin/logs                → 操作日誌</div>
+            </div>
+        </div>
+
+    </div>
+
+    <script>
+        function filterPages(priority) {
+            const cards = document.querySelectorAll('.page-card');
+            const buttons = document.querySelectorAll('.filter-btn');
+            
+            // Update button states
+            buttons.forEach(btn => {
+                btn.classList.remove('active');
+                if (btn.textContent.includes(priority.toUpperCase()) || 
+                    (priority === 'all' && btn.textContent.includes('全部'))) {
+                    btn.classList.add('active');
+                }
+            });
+            
+            // Filter cards
+            cards.forEach(card => {
+                if (priority === 'all') {
+                    card.style.display = 'block';
+                } else {
+                    const cardPriority = card.getAttribute('data-priority');
+                    if (cardPriority === priority) {
+                        card.style.display = 'block';
+                    } else {
+                        card.style.display = 'none';
+                    }
+                }
+            });
+        }
+
+        // Smooth scroll for navigation links
+        document.querySelectorAll('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

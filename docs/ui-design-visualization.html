@@ -1,0 +1,1013 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>鄰里市集 - UI 設計系統視覺化</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Microsoft JhengHei', sans-serif;
+            background: #F8F9FA;
+            padding: 20px;
+            line-height: 1.6;
+            color: #1E293B;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+        }
+
+        h1 {
+            text-align: center;
+            color: #1E293B;
+            margin-bottom: 10px;
+            font-size: 32px;
+            font-weight: 700;
+        }
+
+        .subtitle {
+            text-align: center;
+            color: #64748B;
+            margin-bottom: 40px;
+            font-size: 16px;
+        }
+
+        .section {
+            background: white;
+            border-radius: 12px;
+            padding: 32px;
+            margin-bottom: 32px;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .section-title {
+            font-size: 24px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 24px;
+            border-bottom: 2px solid #2563EB;
+            padding-bottom: 12px;
+        }
+
+        .subsection-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-top: 32px;
+            margin-bottom: 16px;
+        }
+
+        /* Color System */
+        .color-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 16px;
+            margin-bottom: 24px;
+        }
+
+        .color-card {
+            border-radius: 8px;
+            overflow: hidden;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .color-swatch {
+            height: 120px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .color-info {
+            padding: 12px;
+            background: white;
+        }
+
+        .color-name {
+            font-weight: 600;
+            font-size: 14px;
+            color: #1E293B;
+            margin-bottom: 4px;
+        }
+
+        .color-value {
+            font-size: 12px;
+            color: #64748B;
+            font-family: 'Courier New', monospace;
+        }
+
+        /* Typography */
+        .typography-sample {
+            margin-bottom: 24px;
+            padding: 16px;
+            background: #F8F9FA;
+            border-radius: 8px;
+        }
+
+        .typography-label {
+            font-size: 12px;
+            color: #64748B;
+            margin-bottom: 8px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .typography-text {
+            margin-bottom: 4px;
+        }
+
+        /* Spacing System */
+        .spacing-demo {
+            display: flex;
+            align-items: center;
+            margin-bottom: 16px;
+            padding: 16px;
+            background: #F8F9FA;
+            border-radius: 8px;
+        }
+
+        .spacing-box {
+            background: #2563EB;
+            border-radius: 4px;
+        }
+
+        .spacing-label {
+            margin-left: 16px;
+            font-size: 14px;
+            color: #1E293B;
+        }
+
+        /* Component Showcase */
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 24px;
+            margin-bottom: 24px;
+        }
+
+        .component-card {
+            padding: 24px;
+            background: white;
+            border: 1px solid #E5E7EB;
+            border-radius: 8px;
+        }
+
+        .component-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 16px;
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+
+        .btn {
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 500;
+            border: none;
+            cursor: pointer;
+            transition: all 150ms ease-in-out;
+        }
+
+        .btn-primary {
+            background: #2563EB;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: #1D4ED8;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .btn-secondary {
+            background: white;
+            color: #1E293B;
+            border: 2px solid #CBD5E1;
+        }
+
+        .btn-secondary:hover {
+            background: #F8F9FA;
+            border-color: #2563EB;
+        }
+
+        .btn-text {
+            background: transparent;
+            color: #2563EB;
+        }
+
+        .btn-text:hover {
+            background: #EFF6FF;
+        }
+
+        .btn:disabled {
+            background: #F1F5F9;
+            color: #CBD5E1;
+            cursor: not-allowed;
+        }
+
+        /* Cards */
+        .product-card {
+            background: white;
+            border-radius: 12px;
+            overflow: hidden;
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .product-image {
+            width: 100%;
+            height: 200px;
+            background: linear-gradient(135deg, #E2E8F0 0%, #CBD5E1 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #94A3B8;
+            font-size: 14px;
+        }
+
+        .product-content {
+            padding: 16px;
+        }
+
+        .product-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1E293B;
+            margin-bottom: 8px;
+        }
+
+        .product-price {
+            font-size: 18px;
+            color: #2563EB;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        .product-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+            margin-bottom: 8px;
+        }
+
+        .badge-new {
+            background: #ECFDF5;
+            color: #10B981;
+        }
+
+        .badge-used {
+            background: #FFFBEB;
+            color: #F59E0B;
+        }
+
+        .badge-verified {
+            background: #2563EB;
+            color: white;
+        }
+
+        /* Input Fields */
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        .input-label {
+            font-size: 14px;
+            color: #64748B;
+            margin-bottom: 8px;
+            display: block;
+        }
+
+        .input-field {
+            width: 100%;
+            height: 48px;
+            padding: 12px 16px;
+            border: 2px solid #CBD5E1;
+            border-radius: 8px;
+            font-size: 16px;
+            background: white;
+            transition: all 150ms ease-in-out;
+        }
+
+        .input-field:focus {
+            outline: none;
+            border-color: #2563EB;
+            background: #EFF6FF;
+        }
+
+        .input-field.error {
+            border-color: #EF4444;
+            background: #FEF2F2;
+        }
+
+        /* Badges */
+        .badge-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        /* Avatar */
+        .avatar-group {
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .avatar {
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            background: #2563EB;
+        }
+
+        .avatar-small {
+            width: 32px;
+            height: 32px;
+            font-size: 14px;
+        }
+
+        .avatar-medium {
+            width: 48px;
+            height: 48px;
+            font-size: 16px;
+        }
+
+        .avatar-large {
+            width: 64px;
+            height: 64px;
+            font-size: 20px;
+        }
+
+        /* Shadows */
+        .shadow-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+            gap: 24px;
+        }
+
+        .shadow-card {
+            padding: 24px;
+            background: white;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        .shadow-small {
+            box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .shadow-medium {
+            box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .shadow-large {
+            box-shadow: 0px 10px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .shadow-xlarge {
+            box-shadow: 0px 20px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        /* Radius */
+        .radius-demo {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(150px, 1fr));
+            gap: 24px;
+        }
+
+        .radius-box {
+            width: 100px;
+            height: 100px;
+            background: #2563EB;
+            margin: 0 auto;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+        }
+
+        .radius-label {
+            text-align: center;
+            margin-top: 8px;
+            font-size: 12px;
+            color: #64748B;
+        }
+
+        /* Alerts */
+        .alert {
+            padding: 12px 16px;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .alert-success {
+            background: #ECFDF5;
+            border: 1px solid #10B981;
+            color: #10B981;
+        }
+
+        .alert-error {
+            background: #FEF2F2;
+            border: 1px solid #EF4444;
+            color: #EF4444;
+        }
+
+        .alert-warning {
+            background: #FFFBEB;
+            border: 1px solid #F59E0B;
+            color: #F59E0B;
+        }
+
+        .alert-info {
+            background: #EFF6FF;
+            border: 1px solid #3B82F6;
+            color: #3B82F6;
+        }
+
+        /* Navigation */
+        .nav-demo {
+            background: white;
+            border-radius: 8px;
+            padding: 16px;
+            margin-bottom: 24px;
+        }
+
+        .top-nav {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            height: 56px;
+            border-bottom: 1px solid #E5E7EB;
+            margin-bottom: 16px;
+        }
+
+        .bottom-nav {
+            display: flex;
+            justify-content: space-around;
+            align-items: center;
+            height: 60px;
+            border-top: 1px solid #E5E7EB;
+            background: white;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            color: #64748B;
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: #2563EB;
+        }
+
+        .nav-icon {
+            width: 24px;
+            height: 24px;
+            background: currentColor;
+            border-radius: 4px;
+            opacity: 0.3;
+        }
+
+        /* Loading */
+        .loading-demo {
+            display: flex;
+            gap: 32px;
+            align-items: center;
+        }
+
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 4px solid #E5E7EB;
+            border-top-color: #2563EB;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        .skeleton {
+            background: #F1F5F9;
+            border-radius: 4px;
+            animation: pulse 1.5s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .skeleton-text {
+            height: 16px;
+            margin-bottom: 8px;
+        }
+
+        .skeleton-title {
+            height: 24px;
+            width: 60%;
+            margin-bottom: 12px;
+        }
+
+        /* Code Block */
+        .code-block {
+            background: #1E293B;
+            color: #E2E8F0;
+            padding: 16px;
+            border-radius: 8px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            overflow-x: auto;
+            margin-top: 16px;
+        }
+
+        /* Print Styles */
+        @media print {
+            body {
+                background: white;
+            }
+            .section {
+                page-break-after: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>鄰里市集 UI 設計系統</h1>
+        <p class="subtitle">Neighbor Marketplace Design System Visualization</p>
+
+        <!-- Color System -->
+        <div class="section">
+            <h2 class="section-title">1. 色彩系統</h2>
+            
+            <h3 class="subsection-title">主色調（Primary Colors）</h3>
+            <div class="color-grid">
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #2563EB;">Primary-500</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary-500</div>
+                        <div class="color-value">#2563EB</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #1D4ED8;">Primary-600</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary-600</div>
+                        <div class="color-value">#1D4ED8</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #1E40AF;">Primary-700</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary-700</div>
+                        <div class="color-value">#1E40AF</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #EFF6FF; color: #1E293B;">Primary-50</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary-50</div>
+                        <div class="color-value">#EFF6FF</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #DBEAFE; color: #1E293B;">Primary-100</div>
+                    <div class="color-info">
+                        <div class="color-name">Primary-100</div>
+                        <div class="color-value">#DBEAFE</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">語義色調（Semantic Colors）</h3>
+            <div class="color-grid">
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #10B981;">Success-500</div>
+                    <div class="color-info">
+                        <div class="color-name">Success-500</div>
+                        <div class="color-value">#10B981</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #F59E0B;">Warning-500</div>
+                    <div class="color-info">
+                        <div class="color-name">Warning-500</div>
+                        <div class="color-value">#F59E0B</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #EF4444;">Error-500</div>
+                    <div class="color-info">
+                        <div class="color-name">Error-500</div>
+                        <div class="color-value">#EF4444</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #3B82F6;">Info-500</div>
+                    <div class="color-info">
+                        <div class="color-name">Info-500</div>
+                        <div class="color-value">#3B82F6</div>
+                    </div>
+                </div>
+            </div>
+
+            <h3 class="subsection-title">中性色調（Neutral Colors）</h3>
+            <div class="color-grid">
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #1E293B;">Text-Primary</div>
+                    <div class="color-info">
+                        <div class="color-name">Text-Primary</div>
+                        <div class="color-value">#1E293B</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #64748B;">Text-Secondary</div>
+                    <div class="color-info">
+                        <div class="color-name">Text-Secondary</div>
+                        <div class="color-value">#64748B</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #94A3B8;">Text-Tertiary</div>
+                    <div class="color-info">
+                        <div class="color-name">Text-Tertiary</div>
+                        <div class="color-value">#94A3B8</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #FFFFFF; color: #1E293B; border: 1px solid #E5E7EB;">Background-Primary</div>
+                    <div class="color-info">
+                        <div class="color-name">Background-Primary</div>
+                        <div class="color-value">#FFFFFF</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #F8F9FA; color: #1E293B;">Background-Secondary</div>
+                    <div class="color-info">
+                        <div class="color-name">Background-Secondary</div>
+                        <div class="color-value">#F8F9FA</div>
+                    </div>
+                </div>
+                <div class="color-card">
+                    <div class="color-swatch" style="background: #F1F5F9; color: #1E293B;">Background-Tertiary</div>
+                    <div class="color-info">
+                        <div class="color-name">Background-Tertiary</div>
+                        <div class="color-value">#F1F5F9</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Typography -->
+        <div class="section">
+            <h2 class="section-title">2. 字體系統</h2>
+            
+            <div class="typography-sample">
+                <div class="typography-label">H1 - 32px / 2rem (Bold 700)</div>
+                <div class="typography-text" style="font-size: 32px; font-weight: 700; line-height: 1.2;">這是標題一</div>
+            </div>
+
+            <div class="typography-sample">
+                <div class="typography-label">H2 - 24px / 1.5rem (Semibold 600)</div>
+                <div class="typography-text" style="font-size: 24px; font-weight: 600; line-height: 1.2;">這是標題二</div>
+            </div>
+
+            <div class="typography-sample">
+                <div class="typography-label">H3 - 20px / 1.25rem (Semibold 600)</div>
+                <div class="typography-text" style="font-size: 20px; font-weight: 600; line-height: 1.2;">這是標題三</div>
+            </div>
+
+            <div class="typography-sample">
+                <div class="typography-label">Body-Large - 18px / 1.125rem (Regular 400)</div>
+                <div class="typography-text" style="font-size: 18px; font-weight: 400; line-height: 1.5;">這是重要正文，用於強調的內容。這是重要正文，用於強調的內容。</div>
+            </div>
+
+            <div class="typography-sample">
+                <div class="typography-label">Body-Medium - 16px / 1rem (Regular 400)</div>
+                <div class="typography-text" style="font-size: 16px; font-weight: 400; line-height: 1.5;">這是標準正文，用於一般內容。這是標準正文，用於一般內容。</div>
+            </div>
+
+            <div class="typography-sample">
+                <div class="typography-label">Body-Small - 14px / 0.875rem (Regular 400)</div>
+                <div class="typography-text" style="font-size: 14px; font-weight: 400; line-height: 1.5;">這是次要正文，用於描述和輔助資訊。這是次要正文，用於描述和輔助資訊。</div>
+            </div>
+
+            <div class="typography-sample">
+                <div class="typography-label">Body-XSmall - 12px / 0.75rem (Regular 400)</div>
+                <div class="typography-text" style="font-size: 12px; font-weight: 400; line-height: 1.5;">這是輔助文字，用於提示和標籤。這是輔助文字，用於提示和標籤。</div>
+            </div>
+        </div>
+
+        <!-- Spacing System -->
+        <div class="section">
+            <h2 class="section-title">3. 間距系統（8px 基礎網格）</h2>
+            
+            <div class="spacing-demo">
+                <div class="spacing-box" style="width: 4px; height: 4px;"></div>
+                <div class="spacing-label">Space-1: 4px</div>
+            </div>
+            <div class="spacing-demo">
+                <div class="spacing-box" style="width: 8px; height: 8px;"></div>
+                <div class="spacing-label">Space-2: 8px</div>
+            </div>
+            <div class="spacing-demo">
+                <div class="spacing-box" style="width: 12px; height: 12px;"></div>
+                <div class="spacing-label">Space-3: 12px</div>
+            </div>
+            <div class="spacing-demo">
+                <div class="spacing-box" style="width: 16px; height: 16px;"></div>
+                <div class="spacing-label">Space-4: 16px（標準間距）</div>
+            </div>
+            <div class="spacing-demo">
+                <div class="spacing-box" style="width: 20px; height: 20px;"></div>
+                <div class="spacing-label">Space-5: 20px</div>
+            </div>
+            <div class="spacing-demo">
+                <div class="spacing-box" style="width: 24px; height: 24px;"></div>
+                <div class="spacing-label">Space-6: 24px</div>
+            </div>
+            <div class="spacing-demo">
+                <div class="spacing-box" style="width: 32px; height: 32px;"></div>
+                <div class="spacing-label">Space-8: 32px</div>
+            </div>
+        </div>
+
+        <!-- Border Radius -->
+        <div class="section">
+            <h2 class="section-title">4. 圓角系統</h2>
+            <div class="radius-demo">
+                <div>
+                    <div class="radius-box" style="border-radius: 0px;">None</div>
+                    <div class="radius-label">0px</div>
+                </div>
+                <div>
+                    <div class="radius-box" style="border-radius: 4px;">Small</div>
+                    <div class="radius-label">4px</div>
+                </div>
+                <div>
+                    <div class="radius-box" style="border-radius: 8px;">Medium</div>
+                    <div class="radius-label">8px</div>
+                </div>
+                <div>
+                    <div class="radius-box" style="border-radius: 12px;">Large</div>
+                    <div class="radius-label">12px</div>
+                </div>
+                <div>
+                    <div class="radius-box" style="border-radius: 16px;">XLarge</div>
+                    <div class="radius-label">16px</div>
+                </div>
+                <div>
+                    <div class="radius-box" style="border-radius: 50%;">Full</div>
+                    <div class="radius-label">50% (Full)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Shadows -->
+        <div class="section">
+            <h2 class="section-title">5. 陰影系統</h2>
+            <div class="shadow-demo">
+                <div class="shadow-card shadow-small">
+                    <div style="font-weight: 600; margin-bottom: 8px;">Small Shadow</div>
+                    <div style="font-size: 12px; color: #64748B;">0px 1px 2px rgba(0, 0, 0, 0.05)</div>
+                </div>
+                <div class="shadow-card shadow-medium">
+                    <div style="font-weight: 600; margin-bottom: 8px;">Medium Shadow</div>
+                    <div style="font-size: 12px; color: #64748B;">0px 4px 6px rgba(0, 0, 0, 0.1)</div>
+                </div>
+                <div class="shadow-card shadow-large">
+                    <div style="font-weight: 600; margin-bottom: 8px;">Large Shadow</div>
+                    <div style="font-size: 12px; color: #64748B;">0px 10px 15px rgba(0, 0, 0, 0.1)</div>
+                </div>
+                <div class="shadow-card shadow-xlarge">
+                    <div style="font-weight: 600; margin-bottom: 8px;">XLarge Shadow</div>
+                    <div style="font-size: 12px; color: #64748B;">0px 20px 25px rgba(0, 0, 0, 0.15)</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons -->
+        <div class="section">
+            <h2 class="section-title">6. 按鈕組件</h2>
+            <div class="component-card">
+                <div class="component-title">主要按鈕（Primary Button）</div>
+                <div class="button-group">
+                    <button class="btn btn-primary">確認交易</button>
+                    <button class="btn btn-primary" disabled>已禁用</button>
+                </div>
+            </div>
+            <div class="component-card">
+                <div class="component-title">次要按鈕（Secondary Button）</div>
+                <div class="button-group">
+                    <button class="btn btn-secondary">取消</button>
+                    <button class="btn btn-secondary" disabled>已禁用</button>
+                </div>
+            </div>
+            <div class="component-card">
+                <div class="component-title">文字按鈕（Text Button）</div>
+                <div class="button-group">
+                    <button class="btn btn-text">查看詳情</button>
+                    <button class="btn btn-text" disabled>已禁用</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Cards -->
+        <div class="section">
+            <h2 class="section-title">7. 卡片組件</h2>
+            <div class="component-grid">
+                <div class="product-card">
+                    <div class="product-image">商品圖片</div>
+                    <div class="product-content">
+                        <div class="product-title">嬰兒推車</div>
+                        <div class="product-price">NT$ 1,500</div>
+                        <div>
+                            <span class="product-badge badge-new">全新</span>
+                            <span class="product-badge badge-verified">✓ 已認證</span>
+                        </div>
+                        <div style="font-size: 14px; color: #64748B; margin-top: 8px;">賣家：王小明</div>
+                    </div>
+                </div>
+                <div class="product-card">
+                    <div class="product-image">商品圖片</div>
+                    <div class="product-content">
+                        <div class="product-title">二手書桌</div>
+                        <div class="product-price">NT$ 800</div>
+                        <div>
+                            <span class="product-badge badge-used">二手</span>
+                            <span class="product-badge badge-verified">✓ 已認證</span>
+                        </div>
+                        <div style="font-size: 14px; color: #64748B; margin-top: 8px;">賣家：李美麗</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Input Fields -->
+        <div class="section">
+            <h2 class="section-title">8. 輸入框組件</h2>
+            <div class="component-card">
+                <div class="component-title">標準輸入框</div>
+                <div class="input-group">
+                    <label class="input-label">商品標題</label>
+                    <input type="text" class="input-field" placeholder="輸入商品標題">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">商品價格</label>
+                    <input type="text" class="input-field" placeholder="輸入價格" value="1500">
+                </div>
+                <div class="input-group">
+                    <label class="input-label">錯誤狀態</label>
+                    <input type="text" class="input-field error" placeholder="請檢查輸入">
+                    <div style="font-size: 12px; color: #EF4444; margin-top: 4px;">此欄位為必填</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Badges -->
+        <div class="section">
+            <h2 class="section-title">9. 標籤與徽章</h2>
+            <div class="component-card">
+                <div class="component-title">狀態標籤</div>
+                <div class="badge-group">
+                    <span class="badge badge-new">全新</span>
+                    <span class="badge badge-used">二手</span>
+                    <span class="badge badge-verified">✓ 已認證</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Avatars -->
+        <div class="section">
+            <h2 class="section-title">10. 頭像組件</h2>
+            <div class="component-card">
+                <div class="component-title">頭像尺寸</div>
+                <div class="avatar-group">
+                    <div class="avatar avatar-small">王</div>
+                    <div class="avatar avatar-medium">李</div>
+                    <div class="avatar avatar-large">張</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts -->
+        <div class="section">
+            <h2 class="section-title">11. 通知與提示</h2>
+            <div class="component-card">
+                <div class="alert alert-success">
+                    <span>✓</span>
+                    <span>交易完成！感謝您的購買。</span>
+                </div>
+                <div class="alert alert-error">
+                    <span>⚠️</span>
+                    <span>網路連線不穩，請稍後再試。</span>
+                </div>
+                <div class="alert alert-warning">
+                    <span>⚠️</span>
+                    <span>請在公共區域完成交易，注意安全。</span>
+                </div>
+                <div class="alert alert-info">
+                    <span>ℹ️</span>
+                    <span>商品已送達管理室，請前往取貨。</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="section">
+            <h2 class="section-title">12. 導航系統</h2>
+            <div class="nav-demo">
+                <div class="top-nav">
+                    <div style="width: 24px; height: 24px; background: #E5E7EB; border-radius: 4px;"></div>
+                    <div style="font-size: 18px; font-weight: 600;">頁面標題</div>
+                    <div style="width: 24px; height: 24px; background: #E5E7EB; border-radius: 4px;"></div>
+                </div>
+                <div style="padding: 20px; text-align: center; color: #64748B;">內容區域</div>
+                <div class="bottom-nav">
+                    <div class="nav-item active">
+                        <div class="nav-icon"></div>
+                        <span>首頁</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon"></div>
+                        <span>分類</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon"></div>
+                        <span>發布</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon"></div>
+                        <span>通知</span>
+                    </div>
+                    <div class="nav-item">
+                        <div class="nav-icon"></div>
+                        <span>我的</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Loading States -->
+        <div class="section">
+            <h2 class="section-title">13. 載入狀態</h2>
+            <div class="component-card">
+                <div class="component-title">旋轉載入（Spinner）</div>
+                <div class="loading-demo">
+                    <div class="spinner"></div>
+                    <div style="font-size: 14px; color: #64748B;">載入中...</div>
+                </div>
+            </div>
+            <div class="component-card">
+                <div class="component-title">骨架屏（Skeleton Screen）</div>
+                <div>
+                    <div class="skeleton skeleton-title"></div>
+                    <div class="skeleton skeleton-text"></div>
+                    <div class="skeleton skeleton-text" style="width: 80%;"></div>
+                    <div class="skeleton skeleton-text" style="width: 60%;"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</body>
+</html>
+
